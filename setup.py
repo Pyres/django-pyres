@@ -1,9 +1,13 @@
+import os
 from setuptools import setup, find_packages
 version=__import__('django_pyres').__version__
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 setup(
-    name='django_pyres',
+    name='django-pyres',
     version=version,
-    description='django pyres ',
+    description='django pyres integration',
+    long_description=read('README.md'),
     author='Matt George',
     author_email='mgeorge@gmail.com',
     maintainer='Matt George',
