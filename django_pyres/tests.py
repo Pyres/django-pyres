@@ -28,4 +28,4 @@ class DecoratorTest(TestCase):
     @patch.object(redis.Redis,'execute_command')
     def test_enqueue(self, MockRedis):
         self.decorated_function.enqueue('test', 'this')
-        assert MockRedis.called
+        self.assertTrue(MockRedis.called)
