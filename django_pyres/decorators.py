@@ -1,26 +1,62 @@
+from functools import update_wrapper
 from django_pyres.conf import settings
+
 from .core import pyres
 
-def job(queue):
-    def wrapper(func):
-        def enqueue(*args):
-            if settings.PYRES_USE_QUEUE:
-                class_name = '%s.%s' % (func.__module__, func.__name__)
-                pyres.enqueue_from_string(class_name, queue, *args)
-            else:
-                return func(*args)
 
-        def __call__(self, *args):
-            return func(*args)
+class Job(object):
+    """
+Class that wraps a function to enqueue in pyres
+"""
+    _resque_conn = pyres
 
-        new_class = type('Job',(),{
-            'queue': queue,
-            'perform': staticmethod(func),
-            'enqueue': staticmethod(enqueue),
-            '__call__': __call__,
-            '__name__': func.__name__
-        })
-        return new_class()
-    return wrapper
+    def __init__(self, func, queue):
+        self.func = func
+        #self.priority = priority
 
+        # Allow this class to be called by pyres
+        self.queue = str(queue)
+        self.perform = func
+
+        # Wrap func
+        update_wrapper(self, func)
+
+    # _resque wraps the underlying resque connection and delays initialization
+    # until needed
+    @property
+    def _resque(self):
+        return self._resque_conn
+
+    @_resque.setter # NOQA
+    def _resque(self, val):
+        self._resque_conn = val
+
+    def enqueue(self, *args, **kwargs):
+        if settings.PYRES_USE_QUEUE:
+            queue = kwargs.pop('queue', self.queue)
+            if kwargs:
+                raise Exception("Cannot pass kwargs to enqueued tasks")
+            class_str = '%s.%s' % (self.__module__, self.__name__)
+            self._resque.enqueue_from_string(class_str, queue, *args)
+        else:
+            return self.func(*args, **kwargs)
+
+    def enqueue_at(self, dt, *args, **kwargs):
+        queue = kwargs.pop('queue', self.queue)
+        if kwargs:
+            raise Exception('Cannot pass kwargs to enqueued tasks')
+        class_str = '%s.%s' % (self.__module__, self.__name__)
+        self._resque.enqueue_at_from_string(dt, class_str, queue, *args)
+
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
+    def __repr__(self):
+        return 'Job(func=%s, queue=%s)' % (self.func, self.queue)
+
+
+def job(queue, cls=Job):
+    def _task(f):
+        return cls(f, queue)
+    return _task
 
