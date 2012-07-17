@@ -17,6 +17,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'pyres>=1.3',
+        'django-appconf>=0.5'
     ],
     classifiers = [
             'Development Status :: 4 - Beta',
