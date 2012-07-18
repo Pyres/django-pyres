@@ -17,11 +17,10 @@ class Command(BaseCommand):
         log_level = getattr(logging, options['log_level'].upper(), 'INFO')
         setup_logging(procname="pyres_worker", log_level=log_level, filename=None)
         setup_pidfile(settings.PYRES_WORKER_PIDFILE)
-        Worker.run(
-            queues, 
-            settings.PYRES_HOST,
-            settings.PYRES_WORKER_INTERVAL, 
-            timeout=settings.PYRES_WORKER_TIMEOUT
-        )
-
+        interval = settings.PYRES_WORKER_INTERVAL
+        worker = Worker(queues=queues, server=settings.PYRES_HOST, password=settings.PYRES_PASSWORD, timeout=settings.PYRES_WORKER_TIMEOUT)
+        if interval is not None:
+            worker.work(interval)
+        else:
+            worker.work()
 
