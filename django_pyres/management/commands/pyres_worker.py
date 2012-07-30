@@ -10,7 +10,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('-l', '--log-level', dest='log_level', default='info', help='log level.  Valid values are "debug", "info", "warning", "error", "critical", in decreasing order of verbosity. Defaults to "info" if parameter not specified.'),
     )
-    help = 'Closes the specified poll for voting'
+    help = 'Creates a pyres worker'
 
     def handle(self, queue_list, **options):
         queues = queue_list.split(',')
@@ -18,7 +18,12 @@ class Command(BaseCommand):
         setup_logging(procname="pyres_worker", log_level=log_level, filename=None)
         setup_pidfile(settings.PYRES_WORKER_PIDFILE)
         interval = settings.PYRES_WORKER_INTERVAL
-        worker = Worker(queues=queues, server=settings.PYRES_HOST, password=settings.PYRES_PASSWORD, timeout=settings.PYRES_WORKER_TIMEOUT)
+        worker = Worker(
+            queues=queues,
+            server=settings.PYRES_HOST,
+            password=settings.PYRES_PASSWORD,
+            timeout=settings.PYRES_WORKER_TIMEOUT
+        )
         if interval is not None:
             worker.work(interval)
         else:

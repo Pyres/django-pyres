@@ -12,18 +12,28 @@ class Command(BaseCommand):
         make_option('-l', '--log-level', dest='log_level', default='info', help='log level.  Valid values are "debug", "info", "warning", "error", "critical", in decreasing order of verbosity. Defaults to "info" if parameter not specified.'),
         make_option('-f', dest='logfile', help='If present, a logfile will be used.  "stderr", "stdout", and "syslog" are all special values.'),
     )
-    help = 'Closes the specified poll for voting'
+    help = 'Creates and runs a pyres manager and worker pool.'
 
     def handle(self, queue_list, **options):
         queues = queue_list.split(',')
         log_level = getattr(logging, options['log_level'].upper(), 'INFO')
         pool_size = options.get('pool_size')
+        log_file = options.get('logfile')
         if pool_size == 0:
             pool_size = settings.PYRES_MANAGER_POOL_SIZE
         setup_pidfile(settings.PYRES_WORKER_PIDFILE)
-        Khan.run(
-            pool_size=pool_size, 
-            queues=queues, 
-            server=settings.PYRES_HOST, 
-            logging_level=log_level, 
-            log_file=None)
+        worker = Khan(
+            pool_size=pool_size,
+            queues=queues,
+            server=settings.PYRES_HOST,
+            password=settings.PYRES_PASSWORD,
+            logging_level=log_level,
+            log_file=log_file
+        )
+        worker.work()
+        #Khan.run(
+        #    pool_size=pool_size, 
+        #    queues=queues, 
+        #    server=settings.PYRES_HOST, 
+        #    logging_level=log_level, 
+        #    log_file=None)
