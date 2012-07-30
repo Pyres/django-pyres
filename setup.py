@@ -16,7 +16,7 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'example','testapp','tests']),
     include_package_data=True,
     install_requires=[
-        'pyres>=1.3',
+        'pyres>=1.4.1',
         'django-appconf>=0.5'
     ],
     classifiers = [
