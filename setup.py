@@ -7,15 +7,15 @@ setup(
     name='django-pyres',
     version=version,
     description='django pyres integration',
-    long_description=read('README.md'),
+    long_description=read('README.txt'),
     author='Matt George',
     author_email='mgeorge@gmail.com',
     maintainer='Matt George',
     license='MIT',
     url='http://github.com/Pyres/django_pyres',
     packages=find_packages(exclude=['ez_setup', 'example','testapp','tests']),
+    package_data={'': ['README.txt']},
     include_package_data=True,
-    package_data={'': ['README.md']},
     install_requires=[
         'pyres>=1.4.1',
         'django-appconf>=0.5'
