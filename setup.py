@@ -11,7 +11,7 @@ setup(
     author='Matt George',
     author_email='mgeorge@gmail.com',
     maintainer='Matt George',
-    license='MIT',
+    license='BSD',
     url='http://github.com/Pyres/django_pyres',
     packages=find_packages(exclude=['ez_setup', 'example','testapp','tests']),
     package_data={'': ['README.txt']},
