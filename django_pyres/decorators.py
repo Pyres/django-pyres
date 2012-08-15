@@ -1,8 +1,16 @@
 from functools import update_wrapper
 from django_pyres.conf import settings
-
+from django import db
 from .core import pyres
 
+
+def close_connection_after(func):
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+        db.close_connection()
+        return result
+    update_wrapper(wrapper, func)
+    return wrapper
 
 class Job(object):
     """
@@ -11,12 +19,12 @@ Class that wraps a function to enqueue in pyres
     _resque_conn = pyres
 
     def __init__(self, func, queue):
-        self.func = func
+        self.func = close_connection_after(func)
         #self.priority = priority
 
         # Allow this class to be called by pyres
         self.queue = str(queue)
-        self.perform = func
+        self.perform = self.func
 
         # Wrap func
         update_wrapper(self, func)
