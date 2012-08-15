@@ -15,6 +15,7 @@ setup(
     url='http://github.com/Pyres/django_pyres',
     packages=find_packages(exclude=['ez_setup', 'example','testapp','tests']),
     include_package_data=True,
+    package_data={'': ['README.md']},
     install_requires=[
         'pyres>=1.4.1',
         'django-appconf>=0.5'
