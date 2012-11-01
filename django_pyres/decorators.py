@@ -7,7 +7,8 @@ from .core import pyres
 def close_connection_after(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
-        db.close_connection()
+        if settings.PYRES_USE_QUEUE:
+            db.close_connection()
         return result
     update_wrapper(wrapper, func)
     return wrapper

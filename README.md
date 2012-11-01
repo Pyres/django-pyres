@@ -9,4 +9,5 @@ workers through the manage command, you don't have to mess around with setting v
 
 Changes
 =======
+0.1.3 - database connections should only be cleaned up when the queue is being used.
 0.1.2 - cleaned up the decorators so database connections are closed at the end of a job.
